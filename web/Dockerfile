@@ -1,9 +1,16 @@
-FROM python:2.7
-MAINTAINER Ram Durairajan "noemail@website.domain"
-RUN apt-get update -y
-RUN apt-get install -y python-pip python-dev build-essential
-COPY . /app
+FROM python:3.11-slim
+
+LABEL maintainer="Ruben Oramas ruben.oramas05@gmail.com"
+
 WORKDIR /app
-RUN pip install -r requirements.txt
-ENTRYPOINT ["python"]
-CMD ["app.py"]
+COPY . /app
+
+# Install system dependencies for common Python packages
+RUN apt-get update -y && \
+    apt-get install -y --no-install-recommends build-essential libpq-dev
+
+# Upgrade pip & install requirements
+RUN pip install --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir -r requirements.txt
+
+CMD ["python", "app.py"]
